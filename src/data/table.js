@@ -4,7 +4,6 @@ function cbToPromise(resolve, reject) {
   return function(err, rows) {
     if (err) reject(err);
     else {
-      console.log(rows);
       resolve(rows);
     }
   };
@@ -43,8 +42,6 @@ export default function(table) {
         const values = keys.map(key => params[key]);
         const condition = keys.map(key => `${key} = ?`).join(" AND ");
         const queryString = `SELECT * FROM ${table} WHERE ${condition};`;
-        console.log(queryString);
-        console.log(values);
         conn.all(queryString, values, cbToPromise(resolve, reject));
       });
 

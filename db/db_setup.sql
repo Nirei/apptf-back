@@ -1,8 +1,12 @@
 CREATE TABLE User (
   id TEXT NOT NULL PRIMARY KEY,
   name TEXT,
-  avatar TEXT,
-  passwd TEXT
+  avatar TEXT
+) WITHOUT ROWID;
+
+CREATE TABLE Auth (
+  id TEXT NOT NULL PRIMARY KEY REFERENCES User(id),
+  passwd TEXT NOT NULL
 ) WITHOUT ROWID;
 
 CREATE TABLE Party (
@@ -56,3 +60,11 @@ CREATE TABLE Vote (
   PRIMARY KEY(voter, accused, partyCreator, partyDate),
   FOREIGN KEY(accused, partyCreator, partyDate) REFERENCES Litigation(accused, partyCreator, partyDate)
 ) WITHOUT ROWID;
+
+INSERT INTO User (
+  id,
+  name
+) VALUES (
+  '4dm1n',
+  'Administrador'
+);
