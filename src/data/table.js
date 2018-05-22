@@ -1,11 +1,14 @@
 import { get as getDbConnection } from "./util/connection.js";
 
-const cbToPromise = function(resolve, reject) {
+function cbToPromise(resolve, reject) {
   return function(err, rows) {
     if (err) reject(err);
-    else resolve(rows);
+    else {
+      console.log(rows);
+      resolve(rows);
+    }
   };
-};
+}
 
 export default function(table) {
   return {
@@ -27,14 +30,59 @@ export default function(table) {
         const values = keys.map(key => entity[key]);
         const queryValues = values.map(v => "?").join(", ");
         const queryString = `INSERT INTO ${table}(${queryKeys}) VALUES (${queryValues});`;
-        conn.run(queryString, values, cbToPromise(resolve, reject));
+        conn.all(queryString, values, cbToPromise(resolve, reject));
       });
+
+      return promise;
     },
 
-    get: function(key) {},
+    get: function(params) {
+      const promise = new Promise(function(resolve, reject) {
+        const conn = getDbConnection();
+        const keys = Object.keys(params);
+        const values = keys.map(key => params[key]);
+        const condition = keys.map(key => `${key} = ?`).join(" AND ");
+        const queryString = `SELECT * FROM ${table} WHERE ${condition};`;
+        console.log(queryString);
+        console.log(values);
+        conn.all(queryString, values, cbToPromise(resolve, reject));
+      });
 
-    delete: function() {},
+      return promise;
+    },
 
-    update: function() {}
+    delete: function(pk) {
+      const promise = new Promise(function(resolve, reject) {
+        const conn = getDbConnection();
+        const keys = Object.keys(pk);
+        const values = keys.map(key => pk[key]);
+        const condition = keys.map(key => `${key} = ?`).join(" AND ");
+        const queryString = `DELETE FROM ${table} WHERE ${condition};`;
+        conn.run(queryString, values, cbToPromise(resolve, reject));
+      });
+
+      return promise;
+    },
+
+    update: function(pk, entity) {
+      const promise = new Promise(function(resolve, reject) {
+        const conn = getDbConnection();
+        const eKeys = Object.keys(entity);
+        const queryKeys = eKeys.join(", ");
+        const eValues = eKeys.map(key => entity[key]);
+        const queryValues = eKeys.map(key => `${key} = ?`).join(", ");
+        const pkKeys = Object.keys(pk);
+        const condition = pkKeys.map(key => `${key} = ?`).join(" AND ");
+        const pkValues = pkKey.map(key => pk[key]);
+        const queryString = `UPDATE ${table} SET ${queryValues} WHERE ${condition};`;
+        conn.run(
+          queryString,
+          [...eValues, ...pkValues],
+          cbToPromise(resolve, reject)
+        );
+      });
+
+      return promise;
+    }
   };
 }
