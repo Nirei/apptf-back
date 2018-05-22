@@ -12,7 +12,7 @@ function main() {
   app.use("/api", endpoints.api);
   app.use("/", endpoints.statics);
 
-  app.listen(3303);
+  app.listen(8080);
 }
 
 process.on("exit", function() {
