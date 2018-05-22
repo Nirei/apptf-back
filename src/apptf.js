@@ -1,25 +1,23 @@
-import { createParty, listParties } from "./data/party.js";
+import express from "express";
+import endpoints from "./endpoints";
 import {
   open as openDbConnection,
   close as closeDbConnection,
-  handleError as handleDbError
- } from "./data/util/connection.js";
+} from "./data/util/connection.js";
 
 function main() {
-  openDbConnection(handleDbError);
+  openDbConnection();
 
-  createParty({
-    name: "Una fiestuki",
-    creator: "asdfghjk",
-    date: Date.now(),
-    type: 0,
-    latitude: 1.0,
-    longitude: 0.1,
-  });
+  const app = express();
+  app.use("/api", endpoints.api);
+  app.use("/", endpoints.statics);
 
-  listParties();
-
-  closeDbConnection(handleDbError);
+  app.listen(3303);
 }
+
+process.on("exit", function() {
+  console.log("Terminating server, closing DB connection.");
+  closeDbConnection();
+});
 
 main();

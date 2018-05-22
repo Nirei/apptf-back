@@ -1,32 +1,19 @@
-import {
-  get as getDbConnection,
-  handleError as handleDbError
-} from "./util/connection.js";
-import { format } from "./util/sql_formatter.js";
+import table from './table';
 
-const DB_TABLE = "Party";
+const DB_TABLE = table("Party");
 
 export function listParties() {
-  const conn = getDbConnection();
-  conn.all(`SELECT * FROM ${DB_TABLE};`, [], (err, rows) => {
-    handleDbError(err);
-    console.log(rows);
-    rows.forEach(row => console.log(row));
-  });
+  return DB_TABLE.list();
 }
 
-export function getParty() {}
+export function getParty(key) {
+  return DB_TABLE.get(key);
+}
 
 export function createParty(party) {
-  console.log(getDbConnection);
-  const conn = getDbConnection();
-  const keys = Object.keys(party);
-  const queryKeys = keys.join(", ");
-  const values = keys.map(key => format(party[key]));
-  const queryValues = values.join(", ");
-  const queryString = `INSERT INTO ${DB_TABLE}(${queryKeys}) VALUES (${queryValues});`
-  console.log(queryString);
-  conn.run(queryString);
+  return DB_TABLE.create(party);
 }
 
-export function deleteParty() {}
+export function deleteParty(key) {
+  return DB_TABLE.delete(key);
+}
