@@ -44,7 +44,7 @@ passport.use(
   })
 );
 
-router.put("/password/:id", changePassword);
+router.put("/password/:id", passport.authenticate("local", {}, changePassword));
 router.get("/logout", logout);
 router.post(
   "/login",
