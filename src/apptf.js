@@ -10,7 +10,7 @@ function main() {
 
   const app = express();
   app.use("/api", endpoints.api);
-  app.use("/", endpoints.statics);
+  app.use(endpoints.statics);
 
   app.listen(8080);
 }
