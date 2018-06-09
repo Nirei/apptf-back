@@ -7,19 +7,38 @@ import * as userDb from "../../data/user.js";
 
 const router = Router();
 
-function login({ req, res, next }, user) {
-  req.logIn(user, function(err) {
+function login(req, res, next) {
+  return passport.authenticate("local", function(err, user, info) {
     if (err) {
       return next(err); // 500 error
     }
-    // Generate a JSON response reflecting signup
-    return res.json({ user });
-  });
+    if (!user) {
+      res.status(401);
+      return res.end();
+    }
+    // We've got an user, attempt login
+    req.logIn(user, function(err) {
+      if (err) {
+        return next(err); // 500 error
+      }
+      // Generate a JSON response reflecting signup
+      return res.json({ user });
+    });
+  })(req, res, next);
 }
 
-function logout(req, res) {
+function session(req, res, next) {
+  if (req.isAuthenticated()) {
+    res.json({ user: req.user });
+  } else {
+    res.status(401);
+    return res.end();
+  }
+}
+
+function logout(req, res, next) {
   req.logout();
-  res.redirect("/");
+  return res.status(204).send({});
 }
 
 function register(req, res, next) {
@@ -57,6 +76,7 @@ function changePassword(req, res) {
   const id = req.params.id;
 }
 
+import util from "util";
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });
@@ -74,7 +94,6 @@ passport.use(
     userDb
       .getUser({ name })
       .then(([user]) => {
-        console.log(user);
         if (!user) {
           return done(null, false, failMessage);
         }
@@ -99,18 +118,7 @@ passport.use(
 router.put("/password/:id", changePassword);
 router.get("/logout", logout);
 router.post("/register/:id", register);
-router.post("/login", function(req, res, next) {
-  passport.authenticate("local", function(err, user, info) {
-    if (err) {
-      return next(err); // 500 error
-    }
-    if (!user) {
-      res.status(401);
-      return res.end();
-    }
-    // We've got an user, attempt login
-    login({ req, res, next }, user);
-  })(req, res, next);
-});
+router.get("/session", session);
+router.post("/login", login);
 
 export default router;
