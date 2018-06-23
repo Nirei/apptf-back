@@ -1,7 +1,14 @@
 import { Router } from "express";
 import * as userDb from "../../data/user.js";
+import { requireAuth } from "../endpoint-util";
 
 const router = Router();
+
+router.get('*', requireAuth);
+router.put('*', requireAuth);
+router.post('*', requireAuth);
+router.delete('*', requireAuth);
+
 
 function listUsers(req, res) {
   userDb.listUsers().then(users => res.json(users));

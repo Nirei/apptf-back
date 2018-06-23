@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import LocalStrategy from "passport-local";
+import { Strategy as LocalStrategy } from "passport-local";
 import bcrypt from "bcryptjs";
 import * as authDb from "../../data/auth.js";
 import * as userDb from "../../data/user.js";
@@ -22,14 +22,14 @@ function login(req, res, next) {
         return next(err); // 500 error
       }
       // Generate a JSON response reflecting signup
-      return res.json({ user });
+      return res.json(user);
     });
   })(req, res, next);
 }
 
 function session(req, res, next) {
   if (req.isAuthenticated()) {
-    res.json({ user: req.user });
+    res.json(req.user);
   } else {
     res.status(401);
     return res.end();
@@ -47,6 +47,7 @@ function register(req, res, next) {
     .then(([[user], [auth]]) => {
       if (auth) {
         // User is already registered
+        console.log(auth);
         res.status(409); // 409 Conflict
         return res.end();
       }
@@ -65,7 +66,15 @@ function register(req, res, next) {
       bcrypt.hash(plainText, 10, function(err, password) {
         authDb
           .createAuth({ id, password })
-          .then(() => login({ req, res, next }, user))
+          .then(() =>
+            req.logIn(user, function(err) {
+              if (err) {
+                return next(err); // 500 error
+              }
+              // Generate a JSON response reflecting signup
+              return res.json(user);
+            })
+          )
           .catch(err => next(err));
       });
     })
@@ -76,7 +85,6 @@ function changePassword(req, res) {
   const id = req.params.id;
 }
 
-import util from "util";
 passport.serializeUser(function(user, done) {
   done(null, user.id);
 });

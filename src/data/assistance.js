@@ -2,18 +2,18 @@ import table from './table';
 
 const DB_TABLE = table("Assistance");
 
-export function listUsers() {
+export function listAssist() {
   return DB_TABLE.list();
 }
 
-export function getUser(key) {
+export function getAssist(key) {
   return DB_TABLE.get(key);
 }
 
-export function createUser(party) {
-  return DB_TABLE.create(party);
+export function createAssist(assist) {
+  return DB_TABLE.create(assist);
 }
 
-export function deleteUser(key) {
+export function deleteAssist(key) {
   return DB_TABLE.delete(key);
 }

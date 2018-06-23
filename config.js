@@ -1,4 +1,4 @@
 export default {
   API_SECRET: "ILIKEDKENNEDY",
-  ORIGIN_WHITELIST: "http://conjurer:3000"
+  ORIGIN_WHITELIST: "http://192.168.0.16:3000"
 };
