@@ -26,9 +26,9 @@ api.use(function(req, res, next) {
   if (req.method in ["POST", "PUT", "GET", "DELETE"]) {
     res.header("Content-Type", "application/json");
   }
-  // res.header("Access-Control-Allow-Origin", config.ORIGIN_WHITELIST);
-  // res.header("Access-Control-Allow-Headers", "content-type");
-  // res.header("Access-Control-Allow-Credentials", true);
+  res.header("Access-Control-Allow-Origin", config.ORIGIN_WHITELIST);
+  res.header("Access-Control-Allow-Headers", "content-type");
+  res.header("Access-Control-Allow-Credentials", true);
   next();
 });
 

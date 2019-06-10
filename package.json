@@ -4,7 +4,7 @@
   "main": "src/apptf.js",
   "license": "AGPL-3.0",
   "scripts": {
-    "start": "babel-watch --presets env src/apptf.js"
+    "start": "DEBUG=express:* babel-watch --presets env src/apptf.js"
   },
   "presets": [
     [
